@@ -89,7 +89,7 @@ exports.deleteDoctor = async (req, res) => {
       return res.status(404).json({ success: false, error: 'Doctor not found' });
     }
     
-    await doctor.remove();
+    await doctor.deleteOne();
     
     res.status(200).json({ success: true, data: {} });
   } catch (err) {

@@ -84,7 +84,7 @@ exports.deleteDepartment = async (req, res) => {
       });
     }
     
-    await department.remove();
+    await department.deleteOne();
     
     res.status(200).json({ success: true, data: {} });
   } catch (err) {
