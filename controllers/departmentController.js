@@ -1,7 +1,7 @@
-const Department = require('../models/Department');
-const Doctor = require('../models/Doctor');
+const Department = require('../models/Department'); // موديل الأقسام
+const Doctor = require('../models/Doctor');         // موديل الأطباء
 
-// Create new department
+// إنشاء قسم جديد
 exports.createDepartment = async (req, res) => {
   try {
     const newDepartment = new Department(req.body);
@@ -12,7 +12,7 @@ exports.createDepartment = async (req, res) => {
   }
 };
 
-// Get all departments
+// جلب جميع الأقسام
 exports.getDepartments = async (req, res) => {
   try {
     const departments = await Department.find();
@@ -22,31 +22,21 @@ exports.getDepartments = async (req, res) => {
   }
 };
 
-// Get single department
+// جلب قسم محدد مع الأطباء الموجودين فيه
 exports.getDepartment = async (req, res) => {
   try {
     const department = await Department.findById(req.params.id);
-    
     if (!department) {
       return res.status(404).json({ success: false, error: 'Department not found' });
     }
-    
-    // Get doctors in this department
     const doctors = await Doctor.find({ department: req.params.id });
-    
-    res.status(200).json({ 
-      success: true, 
-      data: {
-        department,
-        doctors
-      }
-    });
+    res.status(200).json({ success: true, data: { department, doctors } });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
 };
 
-// Update department
+// تعديل بيانات قسم
 exports.updateDepartment = async (req, res) => {
   try {
     const department = await Department.findByIdAndUpdate(
@@ -54,38 +44,27 @@ exports.updateDepartment = async (req, res) => {
       req.body,
       { new: true, runValidators: true }
     );
-    
     if (!department) {
       return res.status(404).json({ success: false, error: 'Department not found' });
     }
-    
     res.status(200).json({ success: true, data: department });
   } catch (err) {
     res.status(400).json({ success: false, error: err.message });
   }
 };
 
-// Delete department
+// حذف قسم (مع التحقق من عدم وجود أطباء فيه)
 exports.deleteDepartment = async (req, res) => {
   try {
     const department = await Department.findById(req.params.id);
-    
     if (!department) {
       return res.status(404).json({ success: false, error: 'Department not found' });
     }
-    
-    // Check if there are doctors in this department
     const doctorsCount = await Doctor.countDocuments({ department: req.params.id });
-    
     if (doctorsCount > 0) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Cannot delete department with doctors. Remove doctors first.' 
-      });
+      return res.status(400).json({ success: false, error: 'Cannot delete department with doctors. Remove doctors first.' });
     }
-    
     await department.deleteOne();
-    
     res.status(200).json({ success: true, data: {} });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
