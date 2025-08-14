@@ -1,16 +1,18 @@
-const express = require('express'); // استيراد إكسبريس
-const router = express.Router(); // إنشاء راوتر
+const express = require('express');
+const router = express.Router();
+const authMiddleware = require('../middleware/authMiddleware');
 
-// استيراد دوال المواعيد من الكنترولر
 const {
-  createAppointment,  // إنشاء موعد
-  getAppointments,    // عرض المواعيد
-  updateAppointmentStatus // تحديث حالة الموعد
+  createAppointment,
+  getAppointments,
+  updateAppointmentStatus
 } = require('../controllers/appointmentController');
 
-// تعريف المسارات
-router.post('/', createAppointment);           // إضافة موعد جديد
-router.get('/', getAppointments);              // جلب المواعيد
-router.put('/:id/status', updateAppointmentStatus); // تحديث حالة موعد
+// GET بدون حماية
+router.get('/', getAppointments);
 
-module.exports = router; // تصدير الراوتر
+// POST و PUT بحماية
+router.post('/', authMiddleware, createAppointment);
+router.put('/:id/status', authMiddleware, updateAppointmentStatus);
+
+module.exports = router;

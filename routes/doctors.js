@@ -1,20 +1,22 @@
-// راوتر لإدارة الأطباء (إضافة - عرض - تعديل - حذف)
 const express = require('express');
 const router = express.Router();
+const authMiddleware = require('../middleware/authMiddleware');
 
 const {
-  createDoctor,   // إنشاء طبيب جديد
-  getDoctors,     // عرض جميع الأطباء
-  getDoctor,      // عرض طبيب محدد
-  updateDoctor,   // تعديل بيانات طبيب
-  deleteDoctor    // حذف طبيب
+  createDoctor,
+  getDoctors,
+  getDoctor,
+  updateDoctor,
+  deleteDoctor
 } = require('../controllers/doctorController');
 
-// تعريف المسارات
-router.post('/', createDoctor);
+// GET بدون حماية
 router.get('/', getDoctors);
 router.get('/:id', getDoctor);
-router.put('/:id', updateDoctor);
-router.delete('/:id', deleteDoctor);
+
+// POST و PUT و DELETE بحماية
+router.post('/', authMiddleware, createDoctor);
+router.put('/:id', authMiddleware, updateDoctor);
+router.delete('/:id', authMiddleware, deleteDoctor);
 
 module.exports = router;

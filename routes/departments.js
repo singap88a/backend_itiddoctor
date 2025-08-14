@@ -1,20 +1,23 @@
-// راوتر لإدارة الأقسام (إضافة - عرض - تعديل - حذف)
+// routes/departments.js
 const express = require('express');
 const router = express.Router();
+const authMiddleware = require('../middleware/authMiddleware');
 
 const {
-  createDepartment,   // إنشاء قسم جديد
-  getDepartments,     // عرض جميع الأقسام
-  getDepartment,      // عرض قسم محدد
-  updateDepartment,   // تعديل قسم
-  deleteDepartment    // حذف قسم
+  createDepartment,
+  getDepartments,
+  getDepartment,
+  updateDepartment,
+  deleteDepartment
 } = require('../controllers/departmentController');
 
-// تعريف المسارات
-router.post('/', createDepartment);
+// GET بدون حماية
 router.get('/', getDepartments);
 router.get('/:id', getDepartment);
-router.put('/:id', updateDepartment);
-router.delete('/:id', deleteDepartment);
+
+// المسارات المحمية
+router.post('/', authMiddleware, createDepartment);
+router.put('/:id', authMiddleware, updateDepartment);
+router.delete('/:id', authMiddleware, deleteDepartment);
 
 module.exports = router;
