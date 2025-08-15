@@ -7,11 +7,7 @@ const SocialIconSchema = new mongoose.Schema({
   }
 }, { _id: false });
 
-const DepartmentSchema = new mongoose.Schema({
-  icon: {
-    type: String,
-    required: true
-  },
+const DepartmentTranslationSchema = new mongoose.Schema({
   title: {
     type: String,
     required: true
@@ -19,6 +15,17 @@ const DepartmentSchema = new mongoose.Schema({
   description: {
     type: String,
     required: true
+  }
+}, { _id: false });
+
+const DepartmentSchema = new mongoose.Schema({
+  icon: {
+    type: String,
+    required: true
+  },
+  translations: {
+    en: DepartmentTranslationSchema,
+    ar: DepartmentTranslationSchema
   },
   hero_img: {
     type: String
