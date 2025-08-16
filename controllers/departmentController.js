@@ -1,16 +1,19 @@
+const mongoose = require('mongoose');
 const Department = require('../models/Department');
+const Doctor = require('../models/Doctor'); // ✅ مهم عشان ماتحصلش ReferenceError
 
+// إنشاء قسم جديد
 exports.createDepartment = async (req, res) => {
   try {
     const { icon, hero_img, socialIcons, translations } = req.body;
-    
+
     const newDepartment = new Department({
       icon,
       hero_img,
       socialIcons,
       translations
     });
-    
+
     await newDepartment.save();
     res.status(201).json({ success: true, data: newDepartment });
   } catch (err) {
@@ -18,6 +21,7 @@ exports.createDepartment = async (req, res) => {
   }
 };
 
+// جلب كل الأقسام
 exports.getDepartments = async (req, res) => {
   try {
     const departments = await Department.find();
@@ -27,55 +31,66 @@ exports.getDepartments = async (req, res) => {
   }
 };
 
+// جلب قسم محدد + الدكاترة المرتبطين بيه
 exports.getDepartment = async (req, res) => {
   try {
-    const department = await Department.findById(req.params.id);
+    const { id } = req.params;
+
+    // تحقق من صلاحية ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ success: false, error: 'Invalid department ID' });
+    }
+
+    const department = await Department.findById(id);
     if (!department) {
       return res.status(404).json({ success: false, error: 'Department not found' });
     }
-    
-    const doctors = await Doctor.find({ department: req.params.id });
+
+    const doctors = await Doctor.find({ department: id });
     res.status(200).json({ success: true, data: { department, doctors } });
   } catch (err) {
+    console.error("Error in getDepartment:", err);
     res.status(500).json({ success: false, error: err.message });
   }
 };
 
+// تحديث قسم
 exports.updateDepartment = async (req, res) => {
   try {
     const { icon, hero_img, socialIcons, translations } = req.body;
-    
+
     const department = await Department.findByIdAndUpdate(
       req.params.id,
       { icon, hero_img, socialIcons, translations },
       { new: true, runValidators: true }
     );
-    
+
     if (!department) {
       return res.status(404).json({ success: false, error: 'Department not found' });
     }
-    
+
     res.status(200).json({ success: true, data: department });
   } catch (err) {
     res.status(400).json({ success: false, error: err.message });
   }
 };
 
+// حذف قسم
 exports.deleteDepartment = async (req, res) => {
   try {
     const department = await Department.findById(req.params.id);
     if (!department) {
       return res.status(404).json({ success: false, error: 'Department not found' });
     }
-    
+
     const doctorsCount = await Doctor.countDocuments({ department: req.params.id });
     if (doctorsCount > 0) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Cannot delete department with doctors. Remove doctors first.' 
+      return res.status(400).json({
+        success: false,
+        error: 'Cannot delete department with doctors. Remove doctors first.'
       });
     }
-    
+
     await department.deleteOne();
     res.status(200).json({ success: true, data: {} });
   } catch (err) {
