@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const authMiddleware = require('../middleware/authMiddleware');
+// const authMiddleware = require('../middleware/authMiddleware');
 
 const {
   createAppointment,
@@ -12,7 +12,7 @@ const {
 router.get('/', getAppointments);
 
 // POST و PUT بحماية
-router.post('/', authMiddleware, createAppointment);
-router.put('/:id/status', authMiddleware, updateAppointmentStatus);
+router.post('/',   createAppointment);
+router.put('/:id/status',   updateAppointmentStatus);
 
 module.exports = router;
