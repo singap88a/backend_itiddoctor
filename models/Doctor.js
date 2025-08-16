@@ -1,131 +1,97 @@
 const mongoose = require('mongoose');
 
 const SocialMediaSchema = new mongoose.Schema({
-  facebook: {
-    type: String,
-    default: ''
+  facebook: { type: String, default: '' },
+  twitter: { type: String, default: '' },
+  linkedin: { type: String, default: '' },
+  whatsapp: { type: String, default: '' }
+}, { _id: false });
+
+const WorkingHoursSchema = new mongoose.Schema({
+  day: {
+    en: { type: String, required: true },
+    ar: { type: String, required: true }
   },
-  twitter: {
-    type: String,
-    default: ''
-  },
-  linkedin: {
-    type: String,
-    default: ''
-  },
-  whatsapp: {
-    type: String,
-    default: ''
+  time: {
+    en: { type: String, required: true },
+    ar: { type: String, required: true }
   }
+}, { _id: false });
+
+const QualificationSchema = new mongoose.Schema({
+  degree: {
+    en: { type: String, required: true },
+    ar: { type: String, required: true }
+  },
+  institution: {
+    en: { type: String, required: true },
+    ar: { type: String, required: true }
+  },
+  year: { type: String, required: true }
+}, { _id: false });
+
+const ExperienceSchema = new mongoose.Schema({
+  position: {
+    en: { type: String, required: true },
+    ar: { type: String, required: true }
+  },
+  organization: {
+    en: { type: String, required: true },
+    ar: { type: String, required: true }
+  },
+  duration: {
+    en: { type: String, required: true },
+    ar: { type: String, required: true }
+  }
+}, { _id: false });
+
+const AwardSchema = new mongoose.Schema({
+  title: {
+    en: { type: String, required: true },
+    ar: { type: String, required: true }
+  },
+  year: { type: String, required: true }
 }, { _id: false });
 
 const DoctorSchema = new mongoose.Schema({
   department: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Department',
-    required: true
+    required: [true, 'Department is required']
   },
-  departmentName: {
-    type: String,
-    required: true
-  },
-  title: {
-    type: String,
-    required: true
-  },
-  job: {
-    type: String,
-    required: true
-  },
-  category: {
-    type: String,
-    required: true
-  },
-  description: {
-    type: String,
-    required: true
-  },
-  image: {
-    type: String
-  },
-  contactInfo: {
-    phone: {
-      type: String,
-      required: true
+  translations: {
+    en: {
+      name: { type: String, required: [true, 'English name is required'] },
+      jobTitle: { type: String, required: [true, 'English job title is required'] },
+      specialty: { type: String, required: [true, 'English specialty is required'] },
+      bio: { type: String, required: [true, 'English bio is required'] },
+      workingHoursTitle: { type: String, default: 'Working Hours' },
+      qualificationsTitle: { type: String, default: 'Qualifications' },
+      experiencesTitle: { type: String, default: 'Work Experience' },
+      awardsTitle: { type: String, default: 'Awards & Honors' }
     },
-    email: {
-      type: String,
-      required: true
+    ar: {
+      name: { type: String, required: [true, 'Arabic name is required'] },
+      jobTitle: { type: String, required: [true, 'Arabic job title is required'] },
+      specialty: { type: String, required: [true, 'Arabic specialty is required'] },
+      bio: { type: String, required: [true, 'Arabic bio is required'] },
+      workingHoursTitle: { type: String, default: 'مواعيد العمل' },
+      qualificationsTitle: { type: String, default: 'المؤهلات العلمية' },
+      experiencesTitle: { type: String, default: 'الخبرات العملية' },
+      awardsTitle: { type: String, default: 'الجوائز والتكريمات' }
     }
   },
-  socialMedia: {
-    type: SocialMediaSchema,
-    default: {}
+  image: { type: String },
+  contactInfo: {
+    phone: { type: String, required: [true, 'Phone number is required'] },
+    email: { type: String, required: [true, 'Email is required'] }
   },
-  appointmentSchedules: [
-    {
-      day: {
-        type: String,
-        required: true
-      },
-      time: {
-        type: String,
-        required: true
-      }
-    }
-  ],
-  degrees: [
-    {
-      degree: {
-        type: String,
-        required: true
-      },
-      institution: {
-        type: String,
-        required: true
-      },
-      year: {
-        type: String,
-        required: true
-      }
-    }
-  ],
-  experiences: [
-    {
-      position: {
-        type: String,
-        required: true
-      },
-      hospital: {
-        type: String,
-        required: true
-      },
-      years: {
-        type: String,
-        required: true
-      }
-    }
-  ],
-  awards: [
-    {
-      award: {
-        type: String,
-        required: true
-      },
-      year: {
-        type: String,
-        required: true
-      }
-    }
-  ],
-  icon: [
-    {
-      iconClass: {
-        type: String,
-        required: true
-      }
-    }
-  ]
+  socialMedia: { type: SocialMediaSchema, default: {} },
+  workingHours: { type: [WorkingHoursSchema], default: [] },
+  qualifications: { type: [QualificationSchema], default: [] },
+  experiences: { type: [ExperienceSchema], default: [] },
+  awards: { type: [AwardSchema], default: [] },
+  isFeatured: { type: Boolean, default: false }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Doctor', DoctorSchema);
